@@ -51,11 +51,11 @@ class Bicloo: NSObject {
     }
     
     required convenience init?(coder decoder: NSCoder) {
-        guard let number = decoder.decodeObjectForKey("number") as? Int,
-            let name = decoder.decodeObjectForKey("name") as? String,
-            let address = decoder.decodeObjectForKey("address") as? String,
-            let lat = decoder.decodeObjectForKey("lat") as? Double,
-            let lon = decoder.decodeObjectForKey("lon") as? Double
+        guard let number = decoder.decodeObject(forKey: "number") as? Int,
+            let name = decoder.decodeObject(forKey: "name") as? String,
+            let address = decoder.decodeObject(forKey: "address") as? String,
+            let lat = decoder.decodeObject(forKey: "lat") as? Double,
+            let lon = decoder.decodeObject(forKey: "lon") as? Double
             else {
                 return nil
         }
@@ -63,33 +63,33 @@ class Bicloo: NSObject {
     }
     
     //MARK: - Static
-    static func saveBicloos(velos: [Bicloo]) {
+    static func saveBicloos(_ velos: [Bicloo]) {
         NSKeyedArchiver.archiveRootObject(velos, toFile: getPath())
     }
     
     static func getBicloos() -> [Bicloo] {
-        guard let velos = NSKeyedUnarchiver.unarchiveObjectWithFile(getPath()) as? [Bicloo] else {
+        guard let velos = NSKeyedUnarchiver.unarchiveObject(withFile: getPath()) as? [Bicloo] else {
             return []
         }
         return velos
     }
     
     static func getPath() -> String {
-        let manager = NSFileManager.defaultManager()
-        let url = manager.URLsForDirectory(.CachesDirectory, inDomains: .UserDomainMask).first!
-        return url.URLByAppendingPathComponent("Bicloo").path!
+        let manager = FileManager.default
+        let url = manager.urls(for: .cachesDirectory, in: .userDomainMask).first!
+        return url.appendingPathComponent("Bicloo").path
     }
     
 }
 
 // MARK: - NSCoding
 extension Bicloo: NSCoding {
-    func encodeWithCoder(coder: NSCoder) {
-        coder.encodeObject(self.number, forKey: "number")
-        coder.encodeObject(self.name, forKey: "name")
-        coder.encodeObject(self.address, forKey: "address")
-        coder.encodeObject(self.lat, forKey: "lat")
-        coder.encodeObject(self.lon, forKey: "lon")
+    func encode(with coder: NSCoder) {
+        coder.encode(self.number, forKey: "number")
+        coder.encode(self.name, forKey: "name")
+        coder.encode(self.address, forKey: "address")
+        coder.encode(self.lat, forKey: "lat")
+        coder.encode(self.lon, forKey: "lon")
     }
 }
 

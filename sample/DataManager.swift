@@ -36,27 +36,22 @@ class DataManager: NSObject {
     
     // MARK: - Data
     
-    func loadData(done callback:()->()) {
-        let params = ["contract":"Nantes","apiKey":""]
-        Alamofire.request(.GET, "https://api.jcdecaux.com/vls/v1/stations", parameters: params)
+    func loadData(done callback:@escaping ()->()) {
+        let params = ["contract":"Nantes","apiKey":"5dc69b6d9123fb82eb410addb1084b86299a9cd6"]
+        Alamofire.request("https://api.jcdecaux.com/vls/v1/stations", parameters: params)
             .validate()
             .responseJSON { response in
-                switch response.result {
-                case .Success:
-                    guard let datas = response.result.value as? [AnyObject] else {
-                        return
-                    }
-                    var velos: [Bicloo] = []
-                    for data in datas {
-                        let velo = Bicloo(raw: data as! Dictionary<String, AnyObject>)
-                        velos.append(velo)
-                    }
-                    self.datas = velos
-                    Bicloo.saveBicloos(velos)
-                    callback()
-                case .Failure(let error):
-                    print(error)
+                guard let datas = response.result.value as? [AnyObject] else {
+                    return
                 }
+                var velos: [Bicloo] = []
+                for data in datas {
+                    let velo = Bicloo(raw: data as! Dictionary<String, AnyObject>)
+                    velos.append(velo)
+                }
+                self.datas = velos
+                Bicloo.saveBicloos(velos)
+                callback()
         }
     }
 }
@@ -64,13 +59,13 @@ class DataManager: NSObject {
 
 // MARK: - CLLocationManagerDelegate
 extension DataManager: CLLocationManagerDelegate {
-    func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
-        if status == .AuthorizedWhenInUse || status == .AuthorizedAlways {
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        if status == .authorizedWhenInUse || status == .authorizedAlways {
             locationManager.startUpdatingLocation()
         }
     }
     
-    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         currentLocation = locations.first
     }
 }

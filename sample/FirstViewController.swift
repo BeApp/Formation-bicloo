@@ -12,9 +12,9 @@ import MessageUI
 //MARK: - Protocol 
 
 protocol BiclooCellDelegate: class  {
-    func didShareBicloo(velo: Bicloo)
-    func didOpenMapBicloo(velo: Bicloo)
-    func didSearchBicloo(velo: Bicloo)
+    func didShareBicloo(_ velo: Bicloo)
+    func didOpenMapBicloo(_ velo: Bicloo)
+    func didSearchBicloo(_ velo: Bicloo)
 }
 
 //MARK: -
@@ -38,7 +38,7 @@ class FirstViewController: UIViewController {
         myTableView.estimatedRowHeight = 100
         
         refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
-        refreshControl.addTarget(self, action: #selector(FirstViewController.refresh(_:)), forControlEvents: .ValueChanged)
+        refreshControl.addTarget(self, action: #selector(FirstViewController.refresh(_:)), for: .valueChanged)
         myTableView.addSubview(refreshControl)
         
         DataManager.sharedData.loadData {
@@ -53,7 +53,7 @@ class FirstViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
-    @IBAction func switchSortingAction(sender: UISegmentedControl) {
+    @IBAction func switchSortingAction(_ sender: UISegmentedControl) {
         sortByDistance = (sender.selectedSegmentIndex == 1)
         if sortByDistance && DataManager.sharedData.currentLocation == nil {
             // pas de localisatin disponible
@@ -65,7 +65,7 @@ class FirstViewController: UIViewController {
     
     //MARK: - Data
     
-    func refresh(sender:AnyObject) {
+    func refresh(_ sender:AnyObject) {
         DataManager.sharedData.loadData {
             self.loadFromManager()
             self.refreshControl.endRefreshing()
@@ -75,18 +75,18 @@ class FirstViewController: UIViewController {
     func loadFromManager() {
         items = DataManager.sharedData.datas
         if sortByDistance {
-            NSOperationQueue().addOperationWithBlock({
+            OperationQueue().addOperation({
                 let loc = DataManager.sharedData.currentLocation
                 for velo in DataManager.sharedData.datas {
-                    velo.distance = loc?.distanceFromLocation(velo.location) ?? -1
+                    velo.distance = loc?.distance(from: velo.location) ?? -1
                 }
-                dispatch_async(dispatch_get_main_queue(), {
-                    self.items.sortInPlace({ $0.distance < $1.distance })
+                DispatchQueue.main.async(execute: {
+                    self.items.sort(by: { $0.distance < $1.distance })
                     self.myTableView.reloadData()
                 })
             })
         } else {
-            items.sortInPlace({ $0.name < $1.name })
+            items.sort(by: { $0.name < $1.name })
             myTableView.reloadData()
         }
     }
@@ -95,25 +95,25 @@ class FirstViewController: UIViewController {
 
 //MARK: - MFMessageComposeViewControllerDelegate
 extension FirstViewController: MFMessageComposeViewControllerDelegate {
-    func messageComposeViewController(controller: MFMessageComposeViewController, didFinishWithResult result: MessageComposeResult) {
-        controller.dismissViewControllerAnimated(true, completion: nil)
+    func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
+        controller.dismiss(animated: true, completion: nil)
     }
 }
 
 //MARK: - BiclooCellDelegate
 extension FirstViewController: BiclooCellDelegate {
-    func didShareBicloo(velo: Bicloo) {
+    func didShareBicloo(_ velo: Bicloo) {
         let composeVC = MFMessageComposeViewController()
         composeVC.messageComposeDelegate = self
         composeVC.body = "Hello from \(velo.name)!"
-        self.presentViewController(composeVC, animated: true, completion: nil)
+        self.present(composeVC, animated: true, completion: nil)
     }
     
-    func didOpenMapBicloo(velo: Bicloo) {
+    func didOpenMapBicloo(_ velo: Bicloo) {
         
     }
     
-    func didSearchBicloo(velo: Bicloo) {
+    func didSearchBicloo(_ velo: Bicloo) {
 //        UIView.animateWithDuration(0.4) {
 //            self.topConstraint.constant = 140
 //            self.view.layoutIfNeeded()
@@ -123,15 +123,15 @@ extension FirstViewController: BiclooCellDelegate {
 
 //MARK: - UITableViewDelegate, UITableViewDataSource
 extension FirstViewController: UITableViewDelegate, UITableViewDataSource {
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return items.count
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let bikeCell = tableView.dequeueReusableCellWithIdentifier("BiclooCellView")! as! BiclooCellView
+        let bikeCell = tableView.dequeueReusableCell(withIdentifier: "BiclooCellView")! as! BiclooCellView
         
-        bikeCell.setBicloo(items[indexPath.row], and: self)
+        bikeCell.setBicloo(items[(indexPath as NSIndexPath).row], and: self)
         
         return bikeCell
     }

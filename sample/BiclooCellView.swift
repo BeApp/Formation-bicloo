@@ -27,7 +27,7 @@ class BiclooCellView: UITableViewCell {
     }
     
     // MARK: - SETTER
-    func setBicloo(velo: Bicloo, and delegate: BiclooCellDelegate) {
+    func setBicloo(_ velo: Bicloo, and delegate: BiclooCellDelegate) {
         self.velo = velo
         self.deleg = delegate
         titleLabel.text = velo.name
@@ -36,21 +36,21 @@ class BiclooCellView: UITableViewCell {
     
     //MARK: - Action
     
-    @IBAction func shareAction(sender: UIButton) {
+    @IBAction func shareAction(_ sender: UIButton) {
         guard let bicloo = velo else {
             return
         }
         deleg?.didShareBicloo(bicloo)
     }
     
-    @IBAction func mapAction(sender: UIButton) {
+    @IBAction func mapAction(_ sender: UIButton) {
         guard let bicloo = velo else {
             return
         }
         deleg?.didOpenMapBicloo(bicloo)
     }
     
-    @IBAction func searchAction(sender: UIButton) {
+    @IBAction func searchAction(_ sender: UIButton) {
         guard let bicloo = velo else {
             return
         }

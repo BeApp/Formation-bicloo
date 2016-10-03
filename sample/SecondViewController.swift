@@ -41,7 +41,7 @@ class SecondViewController: UIViewController {
 
 //MARK: - FBClusteringManagerDelegate
 extension SecondViewController : FBClusteringManagerDelegate {
-    func cellSizeFactorForCoordinator(coordinator:FBClusteringManager) -> CGFloat{
+    func cellSizeFactorForCoordinator(_ coordinator:FBClusteringManager) -> CGFloat{
         return 1.0
     }
 }
@@ -49,8 +49,8 @@ extension SecondViewController : FBClusteringManagerDelegate {
 //MARK: - MKMapViewDelegate
 extension SecondViewController: MKMapViewDelegate {
     
-    func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool){
-        NSOperationQueue().addOperationWithBlock({
+    func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool){
+        OperationQueue().addOperation({
             let mapBoundsWidth = Double(self.mapView.bounds.size.width)
             let mapRectWidth:Double = self.mapView.visibleMapRect.size.width
             let scale:Double = mapBoundsWidth / mapRectWidth
@@ -59,10 +59,10 @@ extension SecondViewController: MKMapViewDelegate {
         })
     }
     
-    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
-        if annotation.isKindOfClass(FBAnnotationCluster) {
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        if annotation.isKind(of: FBAnnotationCluster.self) {
             let reuseId = "Cluster"
-            var clusterView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseId) as? FBAnnotationClusterView
+            var clusterView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? FBAnnotationClusterView
             clusterView?.annotation = annotation
             if clusterView == nil {
                 clusterView = FBAnnotationClusterView(annotation: annotation, reuseIdentifier: reuseId, options: nil)
@@ -71,10 +71,10 @@ extension SecondViewController: MKMapViewDelegate {
         }
         else {
             let reuseId = "Pin"
-            var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseId) as? MKPinAnnotationView
+            var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? MKPinAnnotationView
             if pinView == nil {
                 pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
-                pinView?.pinTintColor = UIColor.orangeColor()
+                pinView?.pinTintColor = UIColor.orange
                 pinView?.canShowCallout = true
             }
             return pinView

@@ -1,8 +1,8 @@
-platform :ios, '8.4'
+platform :ios, '9.0'
 use_frameworks!
 
 target 'sample' do
 	pod 'EZSwiftExtensions'
-	pod 'Alamofire', '~> 3.4'
-    pod 'FBAnnotationClusteringSwift'
+	pod 'Alamofire'
+    pod 'FBAnnotationClusteringSwift', :git => 'git@github.com:cguino/FBAnnotationClusteringSwift.git'
 end
